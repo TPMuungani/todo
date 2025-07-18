@@ -1,0 +1,16 @@
+spring:
+  application:
+    name : todo
+  datasource:
+    url: jdbc:mysql://localhost:3306/todo?autoReconnect=true&createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: ""
+
+  jpa:
+    generate-ddl: false
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
