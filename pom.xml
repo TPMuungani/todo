@@ -92,6 +92,7 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+<!--			this plugin helps to run tests during application packaging -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
