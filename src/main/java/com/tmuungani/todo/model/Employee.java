@@ -22,6 +22,7 @@ public class Employee implements UserDetails {
     private String phone;
     private String firstName;
     private String lastName;
+    private boolean active;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

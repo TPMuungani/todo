@@ -20,4 +20,5 @@ public class Task {
     private String taskCreator;
     private LocalDateTime createdDate;
     private String sharedDepartments; // comma seperated ids in form of a string
+    private boolean active;
 }

@@ -20,4 +20,5 @@ public class SubTask {
     private String comment;
     private final LocalDateTime commentTime = LocalDateTime.now();
     private String nameOfCommenter;
+    private boolean active;
 }
