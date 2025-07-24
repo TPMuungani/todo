@@ -1,6 +1,6 @@
 package com.tmuungani.todo.security;
 
-import com.tmuungani.todo.model.Employee;
+import com.tmuungani.todo.model.employee.Employee;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

@@ -1,4 +1,4 @@
-package com.tmuungani.todo.model;
+package com.tmuungani.todo.model.department;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

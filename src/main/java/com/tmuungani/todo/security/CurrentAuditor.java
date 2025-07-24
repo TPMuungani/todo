@@ -1,6 +1,6 @@
 package com.tmuungani.todo.security;
 
-import com.tmuungani.todo.model.Employee;
+import com.tmuungani.todo.model.employee.Employee;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;

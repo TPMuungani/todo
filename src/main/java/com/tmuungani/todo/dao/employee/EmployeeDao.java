@@ -1,6 +1,6 @@
-package com.tmuungani.todo.dao;
+package com.tmuungani.todo.dao.employee;
 
-import com.tmuungani.todo.model.Employee;
+import com.tmuungani.todo.model.employee.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;

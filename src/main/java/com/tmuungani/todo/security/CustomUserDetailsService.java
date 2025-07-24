@@ -1,7 +1,7 @@
 package com.tmuungani.todo.security;
 
-import com.tmuungani.todo.dao.EmployeeDao;
-import com.tmuungani.todo.model.Employee;
+import com.tmuungani.todo.dao.employee.EmployeeDao;
+import com.tmuungani.todo.model.employee.Employee;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -1,14 +1,15 @@
 package com.tmuungani.todo.service;
 
-import com.tmuungani.todo.dao.DepartmentDao;
-import com.tmuungani.todo.dao.EmployeeDao;
-import com.tmuungani.todo.dto.AuthenticationResponse;
-import com.tmuungani.todo.dto.EmployeeDto;
-import com.tmuungani.todo.dto.RegistrationRequest;
+import com.tmuungani.todo.dao.department.DepartmentDao;
+import com.tmuungani.todo.dao.employee.EmployeeDao;
+import com.tmuungani.todo.controller.authentication.dto.AuthenticationResponse;
+import com.tmuungani.todo.controller.employee.dto.EmployeeDto;
+import com.tmuungani.todo.controller.authentication.dto.RegistrationRequest;
 import com.tmuungani.todo.dto.ServiceResponse;
-import com.tmuungani.todo.model.Employee;
+import com.tmuungani.todo.model.employee.Employee;
 import com.tmuungani.todo.security.CurrentAuditor;
 import com.tmuungani.todo.security.JwtService;
+import com.tmuungani.todo.service.employee.EmployeeServiceImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

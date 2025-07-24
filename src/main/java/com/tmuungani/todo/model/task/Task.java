@@ -1,5 +1,8 @@
-package com.tmuungani.todo.model;
+package com.tmuungani.todo.model.task;
 
+import com.tmuungani.todo.enums.TaskStatus;
+import com.tmuungani.todo.model.department.Department;
+import com.tmuungani.todo.model.employee.Employee;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -21,4 +24,5 @@ public class Task {
     private LocalDateTime createdDate;
     private String sharedDepartments; // comma seperated ids in form of a string
     private boolean active;
+    private TaskStatus taskStatus;
 }

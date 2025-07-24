@@ -1,7 +1,6 @@
-package com.tmuungani.todo.service;
+package com.tmuungani.todo.service.department;
 
 import com.tmuungani.todo.dto.ServiceResponse;
-
 import java.util.List;
 
 public interface DepartmentService {

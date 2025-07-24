@@ -1,12 +1,18 @@
-package com.tmuungani.todo.service;
+package com.tmuungani.todo.service.employee;
 
-import com.tmuungani.todo.dao.DepartmentDao;
-import com.tmuungani.todo.dao.EmployeeDao;
+import com.tmuungani.todo.controller.authentication.dto.AuthenticationResponse;
+import com.tmuungani.todo.controller.authentication.dto.ChangePasswordRequest;
+import com.tmuungani.todo.controller.authentication.dto.LoginRequest;
+import com.tmuungani.todo.controller.authentication.dto.RegistrationRequest;
+import com.tmuungani.todo.controller.employee.dto.EmployeeDto;
+import com.tmuungani.todo.dao.department.DepartmentDao;
+import com.tmuungani.todo.dao.employee.EmployeeDao;
 import com.tmuungani.todo.dto.*;
-import com.tmuungani.todo.model.Department;
-import com.tmuungani.todo.model.Employee;
+import com.tmuungani.todo.model.department.Department;
+import com.tmuungani.todo.model.employee.Employee;
 import com.tmuungani.todo.security.CurrentAuditor;
 import com.tmuungani.todo.security.JwtService;
+import com.tmuungani.todo.service.email.EmailValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

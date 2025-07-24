@@ -1,8 +1,8 @@
-package com.tmuungani.todo.dao;
+package com.tmuungani.todo.dao.task;
 
-import com.tmuungani.todo.model.Department;
-import com.tmuungani.todo.model.Employee;
-import com.tmuungani.todo.model.Task;
+import com.tmuungani.todo.model.department.Department;
+import com.tmuungani.todo.model.employee.Employee;
+import com.tmuungani.todo.model.task.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

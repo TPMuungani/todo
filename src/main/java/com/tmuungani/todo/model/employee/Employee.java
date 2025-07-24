@@ -1,5 +1,6 @@
-package com.tmuungani.todo.model;
+package com.tmuungani.todo.model.employee;
 
+import com.tmuungani.todo.model.department.Department;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

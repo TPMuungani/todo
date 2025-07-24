@@ -1,15 +1,15 @@
-package com.tmuungani.todo.service;
+package com.tmuungani.todo.service.department;
 
-import com.tmuungani.todo.dao.DepartmentDao;
+import com.tmuungani.todo.dao.department.DepartmentDao;
 import com.tmuungani.todo.dto.ServiceResponse;
-import com.tmuungani.todo.model.Department;
+import com.tmuungani.todo.model.department.Department;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DepartmentServiceImpl implements DepartmentService{
+public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentDao departmentDao;
     @Override
     public ServiceResponse<?> registerDepartment(String name) {

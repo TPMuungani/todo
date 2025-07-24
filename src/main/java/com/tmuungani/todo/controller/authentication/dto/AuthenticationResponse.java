@@ -1,4 +1,4 @@
-package com.tmuungani.todo.dto;
+package com.tmuungani.todo.controller.authentication.dto;
 
 public record AuthenticationResponse<T>(boolean success, String message, T body) {
     public AuthenticationResponse(boolean success, String message){

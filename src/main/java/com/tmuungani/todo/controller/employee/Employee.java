@@ -1,9 +1,9 @@
-package com.tmuungani.todo.controller;
+package com.tmuungani.todo.controller.employee;
 
-import com.tmuungani.todo.dto.EmployeeDto;
-import com.tmuungani.todo.dto.RegistrationRequest;
+import com.tmuungani.todo.controller.employee.dto.EmployeeDto;
+import com.tmuungani.todo.controller.authentication.dto.RegistrationRequest;
 import com.tmuungani.todo.dto.ServiceResponse;
-import com.tmuungani.todo.service.EmployeeService;
+import com.tmuungani.todo.service.employee.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

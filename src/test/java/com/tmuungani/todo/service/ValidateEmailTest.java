@@ -1,5 +1,6 @@
 package com.tmuungani.todo.service;
 
+import com.tmuungani.todo.service.email.EmailValidator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

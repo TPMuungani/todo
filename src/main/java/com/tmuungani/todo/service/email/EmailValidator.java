@@ -1,4 +1,4 @@
-package com.tmuungani.todo.service;
+package com.tmuungani.todo.service.email;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

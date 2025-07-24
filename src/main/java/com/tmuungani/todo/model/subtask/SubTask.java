@@ -1,5 +1,6 @@
-package com.tmuungani.todo.model;
+package com.tmuungani.todo.model.subtask;
 
+import com.tmuungani.todo.model.task.Task;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ public class SubTask {
     private String name;
     private String description;
     @ManyToOne(fetch = FetchType.LAZY)
-    private Task  task;
+    private Task task;
     private LocalDateTime startTime;
     private LocalDateTime dueTime;
     @Lob

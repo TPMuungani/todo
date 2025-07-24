@@ -1,7 +1,7 @@
-package com.tmuungani.todo.dao;
+package com.tmuungani.todo.dao.subtask;
 
-import com.tmuungani.todo.model.SubTask;
-import com.tmuungani.todo.model.Task;
+import com.tmuungani.todo.model.subtask.SubTask;
+import com.tmuungani.todo.model.task.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

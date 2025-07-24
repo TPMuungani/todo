@@ -1,4 +1,4 @@
-package com.tmuungani.todo.dto;
+package com.tmuungani.todo.controller.authentication.dto;
 
 public record LoginRequest(String username, String password) {
 }

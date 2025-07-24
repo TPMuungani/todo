@@ -1,4 +1,4 @@
-package com.tmuungani.todo.dto;
+package com.tmuungani.todo.controller.employee.dto;
 
 public record EmployeeDto(
         Long id,
