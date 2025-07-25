@@ -1,4 +1,4 @@
-package com.tmuungani.todo.dto;
+package com.tmuungani.todo.dto.subtask;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

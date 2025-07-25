@@ -5,8 +5,11 @@ import com.tmuungani.todo.dao.employee.EmployeeDao;
 import com.tmuungani.todo.dao.subtask.SubTaskDao;
 import com.tmuungani.todo.dao.task.TaskDao;
 import com.tmuungani.todo.dto.ServiceResponse;
-import com.tmuungani.todo.dto.SubTaskRequest;
-import com.tmuungani.todo.dto.TaskRequest;
+import com.tmuungani.todo.dto.subtask.SubTaskRequest;
+import com.tmuungani.todo.dto.subtask.SubTaskResponse;
+import com.tmuungani.todo.dto.task.TaskRequest;
+import com.tmuungani.todo.dto.task.TaskResponse;
+import com.tmuungani.todo.dto.task.UpdateTaskRequest;
 import com.tmuungani.todo.enums.TaskStatus;
 import com.tmuungani.todo.exception.TodoException;
 import com.tmuungani.todo.model.department.Department;
@@ -17,6 +20,8 @@ import com.tmuungani.todo.security.CurrentAuditor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -47,8 +52,93 @@ public class TaskServiceImpl implements TaskService{
     }
 
     @Override
-    public ServiceResponse<?> updateTask(TaskRequest taskRequest, Long id) {
-        return null;
+    public ServiceResponse<?> updateTask(UpdateTaskRequest taskRequest, Long id) {
+        Optional<Task> existingTask = taskDao.findById(id);
+        if (existingTask.isPresent()){
+            Task task = existingTask.get();
+            task.setTaskName(taskRequest.taskName().trim());
+            Optional<Employee> employee = currentAuditor.getCurrentAuditor();
+            employee.ifPresent(x->
+                    task.setTaskCreator(x.getFirstName()+" "+x.getLastName()));
+            task.setDescription(taskRequest.description());
+            Optional<Department> department = departmentDao.findByName(taskRequest.department().trim().toUpperCase());
+            department.ifPresent(task::setDepartment);
+            if (!taskRequest.subTasks().isEmpty()) {
+                AtomicReference<String> employees = new AtomicReference<>("");
+                taskRequest.assignedIndividuals().forEach(x -> {
+                    Optional<Employee> employee1 = employeeDao.findByUsername(x.trim());
+                    employee1.ifPresent(x1->employees.set(employees + "," + employee1.get().getId()));
+                });
+                task.setAssignedIndividuals(employees.get());
+            }
+            Optional<Employee> assignedEmployee = employeeDao.findByUsername(taskRequest.assignedEmployee().trim());
+            assignedEmployee.ifPresent(task::setAssignedEmployee);
+            task.setCreatedDate(LocalDateTime.now());
+            if (!taskRequest.sharedDepartments().isEmpty()) {
+                AtomicReference<String> departments = new AtomicReference<>("");
+                taskRequest.sharedDepartments().forEach(x -> {
+                    Optional<Department> department1 = departmentDao.findByName(x.trim().toUpperCase());
+                    department1.ifPresent(x1->departments.set(departments + "," + department1.get().getId()));
+                });
+                task.setSharedDepartments(departments.get());
+            }
+            List<SubTask> subTasks = subTaskDao.findByTaskAndActiveTrue(task);
+            if (!subTasks.isEmpty()) {
+                subTaskDao.deleteAll(subTasks);
+                if (!taskRequest.subTasks().isEmpty()) {
+                    taskRequest.subTasks().forEach(x -> {
+                        subTaskDao.save(toSubTask(task, x));
+                    });
+                }
+            }
+            taskDao.save(task);
+            return new ServiceResponse<>(true, "Task updated successfully.", null);
+        }
+        return new ServiceResponse<>(false, "Task does not exist.", null);
+    }
+
+    @Override
+    public ServiceResponse<?> deleteTask(Long id) {
+        Optional<Task> existingTask = taskDao.findById(id);
+        if (existingTask.isPresent()){
+            Task task = existingTask.get();
+            task.setActive(false);
+            taskDao.save(task);
+            return new ServiceResponse<>(true, "Task deleted successfully.", null);
+        }
+        return new ServiceResponse<>(false, "Task does not exist.", null);
+    }
+
+    @Override
+    public ServiceResponse<List<TaskResponse>> getTasksByDepartment(String departmentName) {
+        Optional<Department> department = departmentDao.findByName(departmentName.trim().toUpperCase());
+        if (department.isPresent()){
+            List<Task> tasks = taskDao.findByDepartmentAndActiveTrue(department.get());
+            List<TaskResponse> taskResponses = toTaskResponse(tasks);
+            return new ServiceResponse<>(true, "Success", taskResponses);
+        }
+        return new ServiceResponse<>(false, "Department does not exist.", null);
+    }
+
+    @Override
+    public ServiceResponse<List<TaskResponse>> getAllTasksAssignedToMe() {
+        Optional<Employee> employee = currentAuditor.getCurrentAuditor();
+        return getListOfTasksByEmployee(employee);
+    }
+
+    @Override
+    public ServiceResponse<List<TaskResponse>> getAllTasksAssignedToACertainEmployee(String employeeUsername) {
+        Optional<Employee> employee = employeeDao.findByUsername(employeeUsername.trim().toLowerCase());
+        return getListOfTasksByEmployee(employee);
+    }
+
+    private ServiceResponse<List<TaskResponse>> getListOfTasksByEmployee(Optional<Employee> employee) {
+        if (employee.isPresent()){
+            List<Task> tasks = taskDao.findByAssignedEmployeeAndActiveTrue(employee.get());
+            List<TaskResponse> taskResponses = toTaskResponse(tasks);
+            return new ServiceResponse<>(true, "Success", taskResponses);
+        }
+        return new ServiceResponse<>(false, "Employee does not exist.", null);
     }
 
     private SubTask toSubTask(Task task, SubTaskRequest x) {
@@ -95,5 +185,39 @@ public class TaskServiceImpl implements TaskService{
         }
         task.setActive(true);
         return task;
+    }
+
+    private List<TaskResponse> toTaskResponse(List<Task> tasks) {
+        List<TaskResponse> taskResponses = new ArrayList<>();
+        tasks.forEach(x -> {
+            List<SubTaskResponse> subTaskResponses = new ArrayList<>();
+            List<SubTask> subTasks = subTaskDao.findByTaskAndActiveTrue(x);
+            if (!subTasks.isEmpty()) {
+                subTasks.forEach(v -> {
+                    subTaskResponses.add(new SubTaskResponse(
+                            v.getName(),v.getDescription(), v.getStartTime(), v.getDueTime(), v.getComment()
+                    ));
+                });
+            }
+
+            List<String> assignedEmployees = new ArrayList<>();
+            List<String> assignedIndividuals = List.of(x.getAssignedIndividuals().split(","));
+            assignedIndividuals.forEach(y -> {
+                Optional<Employee> employee = employeeDao.findById(Long.parseLong(y));
+                employee.ifPresent(z->assignedEmployees.add(z.getFirstName()+" "+z.getLastName()));
+            });
+
+            List<String> sharedDepartments = new ArrayList<>();
+            List<String> sharedDepartmentsList = List.of(x.getSharedDepartments().split(","));
+            sharedDepartmentsList.forEach(y -> {
+                Optional<Department> department1 = departmentDao.findById(Long.parseLong(y));
+                department1.ifPresent(z->sharedDepartments.add(z.getName()));
+            });
+
+            taskResponses.add(new TaskResponse(x.getId(), x.getTaskName(), x.getDescription(),x.getDepartment().getName(), assignedEmployees,x.getAssignedEmployee().getFirstName()+" "+x.getAssignedEmployee().getLastName(),
+                    sharedDepartments, subTaskResponses));
+
+        });
+        return taskResponses;
     }
 }

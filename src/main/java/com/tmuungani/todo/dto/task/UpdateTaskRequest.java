@@ -1,11 +1,12 @@
-package com.tmuungani.todo.dto;
+package com.tmuungani.todo.dto.task;
 
+import com.tmuungani.todo.dto.subtask.SubTaskRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
-public record TaskRequest(
+public record UpdateTaskRequest(
         @Size(min = 2, max = 100)
         String taskName,
         @Size(min = 2, max = 300)
@@ -19,6 +20,8 @@ public record TaskRequest(
         @NotNull
         List<String> sharedDepartments, // comma seperated ids in form of a string
         @NotNull
-        List<SubTaskRequest> subTasks
+        List<SubTaskRequest> subTasks,
+        @Size(min = 6, max = 9)
+        String taskStatus
 ) {
 }
