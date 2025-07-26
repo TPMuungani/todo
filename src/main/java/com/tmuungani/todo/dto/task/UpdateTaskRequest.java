@@ -4,6 +4,7 @@ import com.tmuungani.todo.dto.subtask.SubTaskRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public record UpdateTaskRequest(
@@ -22,6 +23,8 @@ public record UpdateTaskRequest(
         @NotNull
         List<SubTaskRequest> subTasks,
         @Size(min = 6, max = 9)
-        String taskStatus
+        String taskStatus,
+        @NotNull
+        LocalDate dueDate
 ) {
 }

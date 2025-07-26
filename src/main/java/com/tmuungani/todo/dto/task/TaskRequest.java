@@ -3,7 +3,7 @@ package com.tmuungani.todo.dto.task;
 import com.tmuungani.todo.dto.subtask.SubTaskRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
+import java.time.LocalDate;
 import java.util.List;
 
 public record TaskRequest(
@@ -20,6 +20,7 @@ public record TaskRequest(
         @NotNull
         List<String> sharedDepartments, // comma seperated ids in form of a string
         @NotNull
-        List<SubTaskRequest> subTasks
+        List<SubTaskRequest> subTasks,
+        LocalDate dueDate
 ) {
 }

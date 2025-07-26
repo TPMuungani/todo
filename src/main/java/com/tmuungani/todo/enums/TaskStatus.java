@@ -4,5 +4,5 @@ public enum TaskStatus {
     ACTIVE,
     COMPLETED,
     OVERDUE,
-    INACTIVE
+    ON_HOLD
 }

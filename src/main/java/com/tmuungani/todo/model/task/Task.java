@@ -6,6 +6,7 @@ import com.tmuungani.todo.model.employee.Employee;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -22,6 +23,7 @@ public class Task {
     private Employee assignedEmployee;
     private String taskCreator;
     private LocalDateTime createdDate;
+    private LocalDate dueDate;
     private String sharedDepartments; // comma seperated ids in form of a string
     private boolean active;
     private TaskStatus taskStatus;

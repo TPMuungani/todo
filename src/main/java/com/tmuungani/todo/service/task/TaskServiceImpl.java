@@ -18,8 +18,12 @@ import com.tmuungani.todo.model.subtask.SubTask;
 import com.tmuungani.todo.model.task.Task;
 import com.tmuungani.todo.security.CurrentAuditor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -73,7 +77,7 @@ public class TaskServiceImpl implements TaskService{
             }
             Optional<Employee> assignedEmployee = employeeDao.findByUsername(taskRequest.assignedEmployee().trim());
             assignedEmployee.ifPresent(task::setAssignedEmployee);
-            task.setCreatedDate(LocalDateTime.now());
+            task.setDueDate(taskRequest.dueDate());
             if (!taskRequest.sharedDepartments().isEmpty()) {
                 AtomicReference<String> departments = new AtomicReference<>("");
                 taskRequest.sharedDepartments().forEach(x -> {
@@ -184,6 +188,7 @@ public class TaskServiceImpl implements TaskService{
             task.setSharedDepartments(departments.get());
         }
         task.setActive(true);
+        task.setDueDate(taskRequest.dueDate());
         return task;
     }
 
@@ -219,5 +224,14 @@ public class TaskServiceImpl implements TaskService{
 
         });
         return taskResponses;
+    }
+
+    @Scheduled(cron = "1 0 0 * * ?")
+    public void changeTaskStatus(){
+        List<Task> tasks = taskDao.findByDueDateBeforeAndTaskStatusNot(LocalDate.now(), TaskStatus.OVERDUE);
+        tasks.stream().filter(x -> !x.getTaskStatus().equals(TaskStatus.ON_HOLD)).forEach(x -> {
+            x.setTaskStatus(TaskStatus.OVERDUE);
+            taskDao.save(x);
+        });
     }
 }
