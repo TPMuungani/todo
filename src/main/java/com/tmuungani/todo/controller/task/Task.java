@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Stream;
 
-@RequestMapping("/api/v1/all/task")
+@RequestMapping("/api/v1/task")
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")

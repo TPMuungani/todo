@@ -8,23 +8,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/all/department")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class Department {
     private final DepartmentService departmentService;
 
-    @PostMapping("/add")
+    @PostMapping("/admin/department/add")
     public ResponseEntity<ServiceResponse<?>> addDepartment(String name){
         return ResponseEntity.ok(departmentService.registerDepartment(name));
     }
 
-    @GetMapping("/all")
+    @GetMapping("/all/all-departments")
     public ResponseEntity<ServiceResponse<List<String>>> getAllDepartments(){
         return ResponseEntity.ok(departmentService.getAllEmployeeDepartments());
     }
 
-    @DeleteMapping("/delete/{name}")
+    @DeleteMapping("/admin/department/delete/{name}")
     public ResponseEntity<ServiceResponse<?>> deleteDepartment(@PathVariable(value = "name") String name){
         return ResponseEntity.ok(departmentService.deleteDepartment(name));
     }
