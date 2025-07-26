@@ -40,7 +40,9 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public ServiceResponse<?> createTask(TaskRequest taskRequest) {
-        try {
+        ServiceResponse<?> checkDates = validateDates(taskRequest);
+        if (checkDates.success())
+            try {
             Task taskToSave = toTask(taskRequest);
             taskToSave.setTaskStatus(TaskStatus.ACTIVE);
             Task task = taskDao.save(toTask(taskRequest));
@@ -50,53 +52,78 @@ public class TaskServiceImpl implements TaskService{
                 });
             }
             return new ServiceResponse<>(true, "Task saved successfully.", null);
-        }catch (TodoException e){
-            return new ServiceResponse<>(false, e.getMessage(), null);
-        }
+            }catch (TodoException e){
+                return new ServiceResponse<>(false, e.getMessage(), null);
+            }
+        return checkDates;
+    }
+
+    private ServiceResponse<?> validateDates(TaskRequest taskRequest) {
+        if (taskRequest.dueDate().isBefore(LocalDate.now()))
+            return new ServiceResponse<>(false, "Due date cannot be before today.", null);
+        List<SubTaskRequest> subTaskRequests = taskRequest.subTasks().stream().filter(x ->
+                x.startTime().isAfter(x.dueTime()) || taskRequest.dueDate().isBefore(x.dueTime().toLocalDate())).toList();
+        if (!subTaskRequests.isEmpty())
+            return new ServiceResponse<>(false, "Subtask due time cannot be after task due date or subtask due time can not be before start time.", null);
+        return new ServiceResponse<>(true, "Success", null);
+    }
+
+    private ServiceResponse<?> validateDates(UpdateTaskRequest taskRequest) {
+        if (taskRequest.dueDate().isBefore(LocalDate.now()))
+            return new ServiceResponse<>(false, "Due date cannot be before today.", null);
+        List<SubTaskRequest> subTaskRequests = taskRequest.subTasks().stream().filter(x ->
+                x.startTime().isAfter(x.dueTime()) || taskRequest.dueDate().isBefore(x.dueTime().toLocalDate())).toList();
+        if (!subTaskRequests.isEmpty())
+            return new ServiceResponse<>(false, "Subtask due time cannot be after task due date or subtask due time can not be before start time.", null);
+        return new ServiceResponse<>(true, "Success", null);
     }
 
     @Override
     public ServiceResponse<?> updateTask(UpdateTaskRequest taskRequest, Long id) {
         Optional<Task> existingTask = taskDao.findById(id);
-        if (existingTask.isPresent()){
+        if (existingTask.isPresent()) {
             Task task = existingTask.get();
-            task.setTaskName(taskRequest.taskName().trim());
-            Optional<Employee> employee = currentAuditor.getCurrentAuditor();
-            employee.ifPresent(x->
-                    task.setTaskCreator(x.getFirstName()+" "+x.getLastName()));
-            task.setDescription(taskRequest.description());
-            Optional<Department> department = departmentDao.findByName(taskRequest.department().trim().toUpperCase());
-            department.ifPresent(task::setDepartment);
-            if (!taskRequest.subTasks().isEmpty()) {
-                AtomicReference<String> employees = new AtomicReference<>("");
-                taskRequest.assignedIndividuals().forEach(x -> {
-                    Optional<Employee> employee1 = employeeDao.findByUsername(x.trim());
-                    employee1.ifPresent(x1->employees.set(employees + "," + employee1.get().getId()));
-                });
-                task.setAssignedIndividuals(employees.get());
-            }
-            Optional<Employee> assignedEmployee = employeeDao.findByUsername(taskRequest.assignedEmployee().trim());
-            assignedEmployee.ifPresent(task::setAssignedEmployee);
-            task.setDueDate(taskRequest.dueDate());
-            if (!taskRequest.sharedDepartments().isEmpty()) {
-                AtomicReference<String> departments = new AtomicReference<>("");
-                taskRequest.sharedDepartments().forEach(x -> {
-                    Optional<Department> department1 = departmentDao.findByName(x.trim().toUpperCase());
-                    department1.ifPresent(x1->departments.set(departments + "," + department1.get().getId()));
-                });
-                task.setSharedDepartments(departments.get());
-            }
-            List<SubTask> subTasks = subTaskDao.findByTaskAndActiveTrue(task);
-            if (!subTasks.isEmpty()) {
-                subTaskDao.deleteAll(subTasks);
+            ServiceResponse<?> check = validateDates(taskRequest);
+            if (check.success()) {
+                task.setTaskName(taskRequest.taskName().trim());
+                Optional<Employee> employee = currentAuditor.getCurrentAuditor();
+                employee.ifPresent(x ->
+                        task.setTaskCreator(x.getFirstName() + " " + x.getLastName()));
+                task.setDescription(taskRequest.description());
+                Optional<Department> department = departmentDao.findByName(taskRequest.department().trim().toUpperCase());
+                department.ifPresent(task::setDepartment);
                 if (!taskRequest.subTasks().isEmpty()) {
-                    taskRequest.subTasks().forEach(x -> {
-                        subTaskDao.save(toSubTask(task, x));
+                    AtomicReference<String> employees = new AtomicReference<>("");
+                    taskRequest.assignedIndividuals().forEach(x -> {
+                        Optional<Employee> employee1 = employeeDao.findByUsername(x.trim());
+                        employee1.ifPresent(x1 -> employees.set(employees + "," + employee1.get().getId()));
                     });
+                    task.setAssignedIndividuals(employees.get());
                 }
+                Optional<Employee> assignedEmployee = employeeDao.findByUsername(taskRequest.assignedEmployee().trim());
+                assignedEmployee.ifPresent(task::setAssignedEmployee);
+                task.setDueDate(taskRequest.dueDate());
+                if (!taskRequest.sharedDepartments().isEmpty()) {
+                    AtomicReference<String> departments = new AtomicReference<>("");
+                    taskRequest.sharedDepartments().forEach(x -> {
+                        Optional<Department> department1 = departmentDao.findByName(x.trim().toUpperCase());
+                        department1.ifPresent(x1 -> departments.set(departments + "," + department1.get().getId()));
+                    });
+                    task.setSharedDepartments(departments.get());
+                }
+                List<SubTask> subTasks = subTaskDao.findByTaskAndActiveTrue(task);
+                if (!subTasks.isEmpty()) {
+                    subTaskDao.deleteAll(subTasks);
+                    if (!taskRequest.subTasks().isEmpty()) {
+                        taskRequest.subTasks().forEach(x -> {
+                            subTaskDao.save(toSubTask(task, x));
+                        });
+                    }
+                }
+                taskDao.save(task);
+                return new ServiceResponse<>(true, "Task updated successfully.", null);
             }
-            taskDao.save(task);
-            return new ServiceResponse<>(true, "Task updated successfully.", null);
+            return check;
         }
         return new ServiceResponse<>(false, "Task does not exist.", null);
     }
