@@ -41,9 +41,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setFirstName(registrationRequest.firstName());
         employee.setLastName(registrationRequest.lastName());
         employee.setEmail(registrationRequest.email());
-        employee.setUsername(registrationRequest.email());
+        employee.setUsername(registrationRequest.username());
         employee.setPassword(passwordEncoder.encode(registrationRequest.password()));
-        employee.setDepartment(departmentDao.findByName(registrationRequest.department().trim().toUpperCase()).orElse(null));
+        Optional<Department> department = departmentDao.findByName(registrationRequest.department());
+        if (department.isPresent()) {
+            employee.setDepartment(department.get());
+        }else {
+            return new AuthenticationResponse<>(false, "Department Not Found");
+        }
         AuthenticationResponse<String> validate = validateEmployee(registrationRequest);
         if (validate.success()) {
             try {
@@ -106,7 +111,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setFirstName(registrationRequest.firstName());
         employee.setLastName(registrationRequest.lastName());
         employee.setEmail(registrationRequest.email());
-        employee.setUsername(registrationRequest.email());
+        employee.setUsername(registrationRequest.username());
         employee.setDepartment(departmentDao.findByName(registrationRequest.department().toUpperCase().trim()).orElse(null));
         String password = UUID.randomUUID().toString().replace("-", "").substring(0, 10);;
         employee.setPassword(passwordEncoder.encode(password));
@@ -132,7 +137,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setFirstName(registrationRequest.firstName());
             employee.setLastName(registrationRequest.lastName());
             employee.setEmail(registrationRequest.email());
-            employee.setUsername(registrationRequest.email());
+            employee.setUsername(registrationRequest.username());
             employee.setActive(true);
             employee.setDepartment(departmentDao.findByName(registrationRequest.department().toUpperCase().trim()).orElse(null));
 //            AuthenticationResponse<String> validate = validateUser(registrationRequest);
@@ -186,7 +191,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private AuthenticationResponse<String> validateEmployee(RegistrationRequest registrationRequest) {
-        Optional<Employee> employee = employeeDao.findByUsernameAndActiveTrue(registrationRequest.email());
+        Optional<Employee> employee = employeeDao.findByUsernameAndActiveTrue(registrationRequest.username());
         if (employee.isPresent()) return new AuthenticationResponse<>(false,"Username already exist.");
         Optional<Employee> emailEmployee = employeeDao.findByEmailAndActiveTrue(registrationRequest.email());
         if (emailEmployee.isPresent()) return new AuthenticationResponse<>(false,"Email already exist.");

@@ -6,5 +6,6 @@ public record RegistrationRequest(String firstName,
                                   String password,
                                   String confirmPassword,
                                   String department,
-                                  String cellNumber) {
+                                  String cellNumber,
+                                  String username) {
 }
