@@ -18,7 +18,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -49,6 +48,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         }else {
             return new AuthenticationResponse<>(false, "Department Not Found");
         }
+        employee.setPhone(registrationRequest.cellNumber());
+        employee.setActive(true);
         AuthenticationResponse<String> validate = validateEmployee(registrationRequest);
         if (validate.success()) {
             try {

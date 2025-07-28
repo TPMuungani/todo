@@ -69,7 +69,8 @@ public class EmployeeServiceTests {
                 "12345",
                 "12345",
                 "Admin",
-                "12343"
+                "12343",
+                "psmith"
         );
 
 
