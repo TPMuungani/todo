@@ -15,7 +15,7 @@ public class Department {
     private final DepartmentService departmentService;
 
     @PostMapping("/admin/department/add")
-    public ResponseEntity<ServiceResponse<?>> addDepartment(String name){
+    public ResponseEntity<ServiceResponse<?>> addDepartment(@RequestParam String name){
         return ResponseEntity.ok(departmentService.registerDepartment(name));
     }
 
